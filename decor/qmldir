@@ -1,0 +1,19 @@
+# The lock screen's look, in the notch's language. LockView loads LockDecor
+# and LockData from here through Loaders, so a mistake in this folder can
+# never take the password field down with it. Theme is the one singleton.
+singleton Theme 1.0 Theme.qml
+AgentMark 1.0 AgentMark.qml
+BatteryIcon 1.0 BatteryIcon.qml
+ClaudeLogo 1.0 ClaudeLogo.qml
+EdgeShape 1.0 EdgeShape.qml
+LockData 1.0 LockData.qml
+LockDecor 1.0 LockDecor.qml
+TallClock 1.0 TallClock.qml
+ClockGlyph 1.0 ClockGlyph.qml
+Glass 1.0 Glass.qml
+MiniRing 1.0 MiniRing.qml
+LimitsWidget 1.0 LimitsWidget.qml
+SessionsWidget 1.0 SessionsWidget.qml
+TodayWidget 1.0 TodayWidget.qml
+SystemWidget 1.0 SystemWidget.qml
+MusicWidget 1.0 MusicWidget.qml

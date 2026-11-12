@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "mike.lock",
+  "name": "Lock Screen",
+  "version": "1.0.0",
+  "author": "Mike",
+  "description": "Omarchy's lock screen in the notch's style: blurred wallpaper, a frosted password pill, the time, and your coding agents' plan limits and sessions.",
+  "omarchy": {
+    "capabilities": [
+      "authentication"
+    ],
+    "clonedFrom": "omarchy.lock"
+  },
+  "kinds": [
+    "service"
+  ],
+  "keepLoaded": true,
+  "entryPoints": {
+    "service": "Service.qml"
+  }
+}
