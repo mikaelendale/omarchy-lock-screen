@@ -251,7 +251,13 @@ Item {
     runWake()
   }
 
+  // The screen stays on for the whole lock. Only sleep (or closing the lid,
+  // which sleeps) turns it off. Omarchy's stock lock blanked it 5 s after
+  // locking; set this to true to bring that back.
+  readonly property bool blankWhileLocked: false
+
   function armBlankTimer(delayMs) {
+    if (!blankWhileLocked) return
     idleBlankTimer.interval = delayMs || idleBlankTimer.idleMs
     idleBlankTimer.armedAt = Date.now()
     idleBlankTimer.restart()
