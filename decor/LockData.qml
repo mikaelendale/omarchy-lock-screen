@@ -52,12 +52,53 @@ Item {
     canNext: !!mprisPlayer.canGoNext,
     canPrevious: !!mprisPlayer.canGoPrevious
   } : null
+  // Play/pause, back and skip go to Omarchy's media service, the same way the
+  // keyboard's media keys do (they work while locked): it picks the player
+  // that can do what was asked. If the shell can't be reached, the player is
+  // asked directly. Each press is logged with the track before and, a few
+  // seconds later, after, so a skip that never lands shows in the journal
+  // (`journalctl --user | grep mike.lock`).
+  property string pendingAction: ""
+  property string trackBefore: ""
   function mediaAction(action) {
+    var p = mprisPlayer
+    var method = action === "toggle" ? "playPause" : action
+    if (method !== "playPause" && method !== "next" && method !== "previous") return
+    trackBefore = p ? String(p.trackTitle || "") : ""
+    pendingAction = action
+    console.log("mike.lock music: " + action + " on " + (p ? (p.identity || "?") : "no player")
+      + " (can skip " + (p ? !!p.canGoNext : false) + ", can go back " + (p ? !!p.canGoPrevious : false)
+      + ") playing \"" + trackBefore + "\"")
+    mediaProc.command = ["omarchy-shell", "media", method]
+    mediaProc.running = true
+    if (action !== "toggle") mediaCheck.restart()
+  }
+  function mediaDirect(action) {
     var p = mprisPlayer
     if (!p) return
     if (action === "toggle" && p.canTogglePlaying) p.togglePlaying()
     else if (action === "next" && p.canGoNext) p.next()
     else if (action === "previous" && p.canGoPrevious) p.previous()
+  }
+  Process {
+    id: mediaProc
+    stdout: StdioCollector {
+      onStreamFinished: console.log("mike.lock music: media service says " + String(text).trim())
+    }
+    onExited: function(code) {
+      if (code === 0) return
+      console.log("mike.lock music: media service unreachable (" + code + "), asking the player directly")
+      root.mediaDirect(root.pendingAction)
+    }
+  }
+  Timer {
+    id: mediaCheck
+    interval: 3000
+    onTriggered: {
+      var now = root.mprisPlayer ? String(root.mprisPlayer.trackTitle || "") : ""
+      console.log("mike.lock music: after " + root.pendingAction + ", "
+        + (now !== root.trackBefore ? "now playing \"" + now + "\"" : "still \"" + now + "\" (the player didn't change track)"))
+    }
   }
 
   readonly property string home: Quickshell.env("HOME")
